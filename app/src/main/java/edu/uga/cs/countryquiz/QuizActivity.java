@@ -13,6 +13,8 @@ public class QuizActivity extends AppCompatActivity {
         setContentView(R.layout.activity_quiz);
 
         ViewPager2 pager = findViewById(R.id.viewPager2);
-
+        CountriesPagerAdapter adapter = new CountriesPagerAdapter(getSupportFragmentManager(), getLifecycle());
+        pager.setOrientation(ViewPager2.ORIENTATION_HORIZONTAL);
+        pager.setAdapter(adapter);
     }
 }
