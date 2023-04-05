@@ -8,10 +8,18 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
+
+import java.util.Random;
 
 
 public class QuizFragment extends Fragment {
+
+    private static String[] answerChoices = {"Correct", "NO", "Bad"};
+
+    private RadioButton buttons[] = new RadioButton[3];
 
     // Array of Android version code names
     private static final String[] androidVersions = {
@@ -99,6 +107,22 @@ public class QuizFragment extends Fragment {
 
         TextView titleView = view.findViewById( R.id.titleView );
         TextView highlightsView = view.findViewById( R.id.highlightsView );
+
+        buttons[0] = view.findViewById(R.id.radioButton);
+        buttons[1] = view.findViewById(R.id.radioButton2);
+        buttons[2] = view.findViewById(R.id.radioButton3);
+
+        Random random = new Random();
+        //generate one number 0-2 to place correct answer
+        int spot = random.nextInt(3);
+        buttons[spot].setText(answerChoices[0]);
+        //generate a number to determine the order of non correct answers
+        int order = random.nextInt(2) + 1;
+        spot++;
+        buttons[spot % 3].setText(answerChoices[order]);
+        order++;
+        spot++;
+        buttons[spot % 3].setText(answerChoices[order % 2]);
 
         titleView.setText( androidVersions[ versionNum ] );
         highlightsView.setText( androidVersionsInfo[ versionNum ] );
