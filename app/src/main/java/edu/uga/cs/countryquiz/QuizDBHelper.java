@@ -4,22 +4,22 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-public class quizDBHelper extends SQLiteOpenHelper {
+public class QuizDBHelper extends SQLiteOpenHelper {
     private static final String DB_NAME = "countryQuizDB.db";
     private static final int DB_VERSION = 1;
 
     //private reference to single instance
-    private static quizDBHelper helperInstance;
+    private static QuizDBHelper helperInstance;
 
     //private constructor
-    private quizDBHelper(Context context) {
+    private QuizDBHelper(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
     }
 
     //public method to access the instance
-    public static synchronized quizDBHelper getInstance(Context context) {
+    public static synchronized QuizDBHelper getInstance(Context context) {
         if(helperInstance == null) {
-            helperInstance = new quizDBHelper(context.getApplicationContext());
+            helperInstance = new QuizDBHelper(context.getApplicationContext());
         }
         return helperInstance;
     }
@@ -31,10 +31,10 @@ public class quizDBHelper extends SQLiteOpenHelper {
 
     private static final String CREATE_COUNTRYLIST =
             "create table" + TABLE_COUNTRYLIST + " ("
-            + COUNTRYLIST_COLUMN_CID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-            + COUNTRYLIST_COLUMN_COUNTRY + " TEXT, "
-            + COUNTRYLIST_COLUMN_CONTINENT + " TEXT"
-            + ")";
+                    + COUNTRYLIST_COLUMN_CID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+                    + COUNTRYLIST_COLUMN_COUNTRY + " TEXT, "
+                    + COUNTRYLIST_COLUMN_CONTINENT + " TEXT"
+                    + ")";
 
 
     //creates database
