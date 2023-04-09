@@ -14,7 +14,7 @@ import java.util.List;
 
 import edu.uga.cs.countryquiz.QuizResult;
 
-// this class is a custom ArrayAdapter, holding JobLeads
+// this class is a custom ArrayAdapter, holding QuizResults
 public class QuizResultArrayAdapter extends ArrayAdapter<QuizResult> {
 
     public static final String DEBUG_TAG = "QuizResultArrayAdapter";

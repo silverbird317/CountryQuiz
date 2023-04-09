@@ -30,7 +30,7 @@ public class QuizDBHelper extends SQLiteOpenHelper {
     public static final String COUNTRYLIST_COLUMN_CONTINENT = "continent";
 
     private static final String CREATE_COUNTRYLIST =
-            "create table" + TABLE_COUNTRYLIST + " ("
+            "create table " + TABLE_COUNTRYLIST + " ("
                     + COUNTRYLIST_COLUMN_CID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                     + COUNTRYLIST_COLUMN_COUNTRY + " TEXT, "
                     + COUNTRYLIST_COLUMN_CONTINENT + " TEXT"
@@ -40,7 +40,7 @@ public class QuizDBHelper extends SQLiteOpenHelper {
     //creates database
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL((CREATE_COUNTRYLIST));
+        db.execSQL(CREATE_COUNTRYLIST);
     }
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {

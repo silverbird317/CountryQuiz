@@ -5,13 +5,9 @@ public class CountryList {
     private String country;
     private String continent;
 
-    public CountryList(){
-        this.cid = -1;
-        this.country = null;
-        this.continent = null;
-    }
-
     public CountryList(String country, String continent) {
+        this.country = country;
+        this.continent = continent;
     }
 
     public long getCid () {
