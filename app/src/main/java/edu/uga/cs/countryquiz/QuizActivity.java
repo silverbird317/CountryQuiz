@@ -41,6 +41,7 @@ public class QuizActivity extends AppCompatActivity {
             countryIndex = countries[i];
             Log.d("Country index", "index is "+ i + " \tCountry index is " + countryIndex);
             QuizFragment.setCountry(i, countryIndex);
+            QuizFragment.setCorrectAnswer(countryIndex);
         }
 
         ViewPager2 pager = findViewById(R.id.viewPager2);
