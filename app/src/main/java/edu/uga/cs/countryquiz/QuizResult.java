@@ -8,67 +8,39 @@ import java.io.Serializable;
  */
 public class QuizResult implements Serializable {
 
-    private String companyName;
-    private String phone;
-    private String url;
-    private String comments;
-
+    private String date;
+    private int score;
     public QuizResult() {
-        this.companyName = null;
-        this.phone = null;
-        this.url = null;
-        this.comments = null;
+        this.date = null;
+        this.score = 0;
     }
 
-    public QuizResult(String companyName, String phone, String url, String comments) {
-        this.companyName = companyName;
-        this.phone = phone;
-        this.url = url;
-        this.comments = comments;
+    public QuizResult(String date, int score) {
+        this.date = date;
+        this.score = score;
     }
 
-    public String getCompanyName()
+    public String getDate()
     {
-        return companyName;
+        return date;
     }
 
-    public void setCompanyName(String companyName)
+    public void setDate(String date)
     {
-        this.companyName = companyName;
+        this.date = date;
     }
 
-    public String getPhone()
+    public int getScore()
     {
-        return phone;
+        return score;
     }
 
-    public void setPhone(String phone)
+    public void setScore(int score)
     {
-        this.phone = phone;
+        this.score = score;
     }
 
-    public String getUrl()
-    {
-        return url;
-    }
-
-    public void setUrl(String url)
-    {
-        this.url = url;
-    }
-
-    public String getComments()
-    {
-        return comments;
-    }
-
-    public void setComments(String comments)
-    {
-        this.comments = comments;
-    }
-
-    public String toString()
-    {
-        return companyName + " " + phone + " " + url + " " + comments;
+    public String toString() {
+        return "Date: " + date + "\nScore:" + score + " / 6";
     }
 }

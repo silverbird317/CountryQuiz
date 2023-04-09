@@ -12,7 +12,7 @@ public class MainActivity extends AppCompatActivity {
 
     public Button startQuiz;
     public Button results;
-    public TextView test;
+    public static TextView test;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

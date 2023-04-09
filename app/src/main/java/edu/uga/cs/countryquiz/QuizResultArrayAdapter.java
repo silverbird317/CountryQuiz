@@ -45,15 +45,11 @@ public class QuizResultArrayAdapter extends ArrayAdapter<QuizResult> {
 
         QuizResult jobLead = values.get( position );
 
-        TextView companyName = itemView.findViewById(R.id.companyName);
-        TextView phone = itemView.findViewById(R.id.phone);
-        TextView url = itemView.findViewById(R.id.url);
-        TextView comments = itemView.findViewById(R.id.comments);
+        TextView date = itemView.findViewById(R.id.companyName);
+        TextView score = itemView.findViewById(R.id.phone);
 
-        companyName.setText( jobLead.getCompanyName() );
-        phone.setText( jobLead.getPhone() );
-        url.setText( jobLead.getUrl() );
-        comments.setText( jobLead.getComments() );
+        date.setText( jobLead.getDate() );
+        score.setText( jobLead.getScore() );
 
         return itemView;
     }
@@ -75,8 +71,7 @@ public class QuizResultArrayAdapter extends ArrayAdapter<QuizResult> {
                     String searchStr = constraint.toString().toLowerCase();
 
                     for( QuizResult jobLead : list ) {
-                        if( jobLead.getCompanyName().toLowerCase().contains(searchStr)
-                                || jobLead.getComments().toLowerCase().contains(searchStr) ) {
+                        if( jobLead.getDate().toLowerCase().contains(searchStr)) {
                             resultsModel.add( jobLead );
                         }
 /*

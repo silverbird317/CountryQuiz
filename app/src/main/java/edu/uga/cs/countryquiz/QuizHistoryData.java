@@ -22,6 +22,8 @@ import java.util.List;
  */
 public class QuizHistoryData {
 
+    public static List<QuizResult> quizHistory = new ArrayList<QuizResult>();
+
     public static final String DEBUG_TAG = "QuizResultsData";
     private static final String QUIZRESULTSFILENAME = "quizResults.dat";
 
