@@ -2,14 +2,21 @@ package edu.uga.cs.countryquiz;
 
 import static android.content.Context.MODE_PRIVATE;
 
+import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
+
+import com.opencsv.CSVReader;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
@@ -26,83 +33,62 @@ public class QuizHistoryData {
 
     public static final String DEBUG_TAG = "QuizResultsData";
     private static final String QUIZRESULTSFILENAME = "quizResults.dat";
-
+    private SQLiteOpenHelper resultsDBHelper;
+    private SQLiteDatabase db;
     private List<QuizResult> quizResults;
     private Context context;
 
+
     public QuizHistoryData( Context context ) {
         this.context = context;
-        quizResults = null;
-        initQuizResults();
+        quizResults = new ArrayList<QuizResult>();
+        this.resultsDBHelper = edu.uga.cs.countryquiz.ResultsDBHelper.getInstance(context);
+    }
+    public void open() {
+        db = resultsDBHelper.getWritableDatabase(); //inherited from SQLiteOpenHelper
+    }
+    public void close(){
+        if(resultsDBHelper != null)
+            resultsDBHelper.close();
     }
 
-    // create/initialize the QUIZRESULTSFILENAME file, if it doesn't exist yet
-    public void initQuizResults() {
-        try {
-            File file = context.getFileStreamPath( QUIZRESULTSFILENAME );
+    public QuizResult storeQuizResult(QuizResult quizResult, int i) {
+        ContentValues values = new ContentValues();
+        //Log.d("humph", i + ": " + countryList.getCountry());
 
-            if( !file.exists() ) {
-                OutputStream output = context.openFileOutput( QUIZRESULTSFILENAME, MODE_PRIVATE );
-                ObjectOutputStream quizResultsFile = new ObjectOutputStream( output );
+        values.put(QuizDBHelper.COUNTRYLIST_COLUMN_COUNTRY, quizResult.getDate());
+        values.put(QuizDBHelper.COUNTRYLIST_COLUMN_CONTINENT, quizResult.getScore());
 
-                quizResults = new ArrayList<QuizResult>();
-                quizResultsFile.writeObject( quizResults );
+        long id = db.insert(edu.uga.cs.countryquiz.QuizDBHelper.TABLE_COUNTRYLIST,null,values);
 
-                Log.d( DEBUG_TAG, "initQuizResults: initialized file: " + QUIZRESULTSFILENAME );
-            }
-            else {
-                Log.d( DEBUG_TAG, "initQuizResults: using existing file: " + QUIZRESULTSFILENAME );
-            }
-            Log.d( DEBUG_TAG, "initQuizResults: quizResults object: " + quizResults );
-        }
-        catch( Exception ex ) {
-            Log.d( DEBUG_TAG, "initQuizResults: Exception caught: " + ex );
-        }
+        quizResult.setCid(id);
+
+        return quizResult;
     }
 
-    // Restore all job leads from file.
-    public void restorelQuizResults() {
-        try {
-            Log.d( DEBUG_TAG, "restorelQuizResults" );
+    public List<QuizResult> retrieveQuizResults() {
+        ArrayList<QuizResult> quizResults = new ArrayList<>();
 
-            FileInputStream input = context.openFileInput( QUIZRESULTSFILENAME );
-            ObjectInputStream resultsFile = new ObjectInputStream( input );
+        Cursor cursor = null;
+        cursor = db.query(edu.uga.cs.countryquiz.ResultsDBHelper.TABLE_RESULTSLIST, null, null, null, null, null, null);
 
-            quizResults = (List<QuizResult>) resultsFile.readObject();
-            resultsFile.close();
+        while(cursor.moveToNext()) {
+            @SuppressLint("Range") long id = cursor.getLong(cursor.getColumnIndex(edu.uga.cs.countryquiz.ResultsDBHelper.RESULTSLIST_COLUMN_CID));
+            @SuppressLint("Range") String date = cursor.getString(cursor.getColumnIndex(edu.uga.cs.countryquiz.ResultsDBHelper.RESULTSLIST_COLUMN_DATE));
+            @SuppressLint("Range") int score = Integer.valueOf(cursor.getString(
+                    cursor.getColumnIndex(
+                            edu.uga.cs.countryquiz.ResultsDBHelper.RESULTSLIST_COLUMN_SCORE)));
 
-            Log.d( DEBUG_TAG, "restorelQuizResults: Number of records restored: " + quizResults.size() );
+            //Log.d("Country", id + ": " + country);
+
+            QuizResult quizResult = new QuizResult(date, score);
+            quizResult.setCid(id);
+            quizResults.add(quizResult);
         }
-        catch( Exception ex ){
-            Log.d( DEBUG_TAG, "restorelQuizResults: Exception caught: " + ex );
-        }
+        return quizResults;
     }
 
     public List<QuizResult> getQuizResults() {
         return quizResults;
-    }
-
-    // Store a new job lead.
-    public void addQuizResults( QuizResult quizResult ) {
-        quizResults.add( quizResult );
-    }
-
-    // Store job leads to a file
-    public void saveQuizResults() {
-        Log.d( DEBUG_TAG, "saveQuizResults: size: " + quizResults.size() );
-        Log.d( DEBUG_TAG, "saveQuizResults: object: " + quizResults );
-
-        try {
-            FileOutputStream output = context.openFileOutput( QUIZRESULTSFILENAME, MODE_PRIVATE );
-            ObjectOutputStream resultsFile = new ObjectOutputStream( output );
-
-            resultsFile.writeObject( quizResults );
-            resultsFile.close();
-
-            Log.d( DEBUG_TAG, "saveQuizResults: job leads saved" );
-        }
-        catch( Exception ex ){
-            Log.d( DEBUG_TAG, "saveQuizResults: Exception caught: " + ex );
-        }
     }
 }

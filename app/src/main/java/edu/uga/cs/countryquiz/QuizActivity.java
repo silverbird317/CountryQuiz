@@ -13,29 +13,21 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class QuizActivity extends AppCompatActivity {
-
-    private CountryListData dbhelper;
     private Integer[] countries = new Integer[18];
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_quiz);
 
-        dbhelper = new CountryListData(this);
-        dbhelper.open();
 
-        int countryIndex = -1;
-
-        Log.d("COUNT", "Country Count = " + dbhelper.getCountryCount());
-        QuizFragment.setCountries(dbhelper.retrieveAllCountryLists());
-
-        int countryCount = dbhelper.getCountryCount();
+        int countryCount = CountryListData.getCountryCount();
         Set<Integer> set = new Random().ints(0, countryCount).distinct()
                 .limit(18)
                 .boxed()
                 .collect(Collectors.toSet());
 
         set.toArray(countries);
+        int countryIndex = -1;
 
         for (int i = 0; i < 6; i++) {
             countryIndex = countries[i];

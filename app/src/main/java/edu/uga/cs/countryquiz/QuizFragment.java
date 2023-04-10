@@ -1,15 +1,22 @@
 package edu.uga.cs.countryquiz;
 
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
 
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -69,7 +76,7 @@ public class QuizFragment extends Fragment {
         }
     }
 
-    @Override
+    /*@Override
     public void onPause() {
         super.onPause();
         if (versionNum == 5) {
@@ -81,7 +88,7 @@ public class QuizFragment extends Fragment {
             QuizHistoryData.quizHistory.add(result);
             Log.d("RESULT", result.toString());
         }
-    }
+    }*/
 
     @Override
     public View onCreateView( LayoutInflater inflater, ViewGroup container,
@@ -116,6 +123,21 @@ public class QuizFragment extends Fragment {
 
         radioGroup = view.findViewById(R.id.radioGroup);
         checked = radioGroup.getCheckedRadioButtonId();
+
+        if (versionNum == 5) {
+            LinearLayout layout = view.findViewById(R.id.LinearLayout);
+            Button finish = new Button(getActivity());
+            finish.setText("Finish Quiz");
+            finish.setOnClickListener(new FinishListener());
+
+            layout.addView(finish);
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+            );
+            params.setMargins(0, 250, 20, 0);
+            finish.setLayoutParams(params);
+        }
 
         Log.d("answers", "0: " + answerChoices[0] + "\n1: " + answerChoices[1] + "\t2:" + answerChoices[2]);
 
@@ -165,6 +187,23 @@ public class QuizFragment extends Fragment {
                     }
 
                 });
+    }
+
+    public class FinishListener implements View.OnClickListener {
+        public void onClick(View view) {
+            SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy   HH:mm");
+            Date dateTime = new Date();
+            String date = formatter.format(dateTime).toString();
+            QuizResult result = new QuizResult(date, correct);
+
+            answered = 0;
+            correct = 0;
+
+            QuizHistoryData.quizHistory.add(result);
+            Log.d("RESULT", result.toString());
+
+            getActivity().finish();
+        }
     }
 
     public static int getNumberOfCountries() {

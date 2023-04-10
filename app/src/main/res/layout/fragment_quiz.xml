@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/LinearLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
@@ -14,7 +15,7 @@
          android:layout_height="wrap_content"
          android:layout_marginStart="10dp"
          android:layout_marginTop="50dp"
-         android:textSize="20dp"
+         android:textSize="20sp"
          android:text="Question" />
 
 
@@ -58,7 +59,7 @@
         android:layout_marginTop="50dp"
         android:layout_marginStart="10dp"
         android:text="Current Score:  / 6"
-        android:textSize="20dp"/>
+        android:textSize="20sp"/>
     <TextView
         android:id="@+id/questionsAnswered"
         android:layout_width="wrap_content"
@@ -66,6 +67,6 @@
         android:layout_marginTop="20dp"
         android:layout_marginStart="10dp"
         android:text=" out of 6 questions answered"
-        android:textSize="15dp"/>
+        android:textSize="15sp"/>
 
 </LinearLayout>

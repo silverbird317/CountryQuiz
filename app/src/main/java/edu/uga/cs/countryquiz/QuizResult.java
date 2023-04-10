@@ -8,6 +8,7 @@ import java.io.Serializable;
  */
 public class QuizResult implements Serializable {
 
+    private long cid;
     private String date;
     private int score;
     public QuizResult() {
@@ -42,5 +43,11 @@ public class QuizResult implements Serializable {
 
     public String toString() {
         return "Date: " + date + "\nScore:" + score + " / 6";
+    }
+    public long getCid() {
+        return cid;
+    }
+    public void setCid(long cid) {
+        this.cid = cid;
     }
 }

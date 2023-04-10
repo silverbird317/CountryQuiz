@@ -45,62 +45,12 @@ public class QuizResultArrayAdapter extends ArrayAdapter<QuizResult> {
 
         QuizResult jobLead = values.get( position );
 
-        TextView date = itemView.findViewById(R.id.companyName);
-        TextView score = itemView.findViewById(R.id.phone);
+        TextView date = itemView.findViewById(R.id.date);
+        TextView score = itemView.findViewById(R.id.score);
 
-        date.setText( jobLead.getDate() );
-        score.setText( jobLead.getScore() );
+        date.setText("Date: " + jobLead.getDate());
+        score.setText("Score: " + jobLead.getScore() + " / 6");
 
         return itemView;
-    }
-
-    @Override
-    public Filter getFilter() {
-        Filter filter = new Filter() {
-
-            @Override
-            protected FilterResults performFiltering(CharSequence constraint) {
-                List<QuizResult> list = new ArrayList<QuizResult>( originalValues );
-                FilterResults filterResults = new FilterResults();
-                if(constraint == null || constraint.length() == 0) {
-                    filterResults.count = list.size();
-                    filterResults.values = list;
-                }
-                else{
-                    List<QuizResult> resultsModel = new ArrayList<>();
-                    String searchStr = constraint.toString().toLowerCase();
-
-                    for( QuizResult jobLead : list ) {
-                        if( jobLead.getDate().toLowerCase().contains(searchStr)) {
-                            resultsModel.add( jobLead );
-                        }
-/*
-                        if (jobLead.getCompanyName().regionMatches(true, i, searchStr, 0, length))
-                            return true;
-
- */
-
-                        filterResults.count = resultsModel.size();
-                        filterResults.values = resultsModel;
-                    }
-                }
-
-                return filterResults;
-            }
-
-            @Override
-            protected void publishResults(CharSequence constraint, FilterResults results) {
-                values = (ArrayList<QuizResult>) results.values;
-                notifyDataSetChanged();
-                clear();
-                int count = values.size();
-                for(int i = 0; i<count; i++){
-                    add( values.get(i) );
-                    notifyDataSetInvalidated();
-                }
-            }
-
-        };
-        return filter;
     }
 }

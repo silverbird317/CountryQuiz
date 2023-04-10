@@ -3,6 +3,7 @@ package edu.uga.cs.countryquiz;
 import android.content.Context;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
@@ -17,10 +18,22 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
+import android.widget.TextView;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Random;
 
 import edu.uga.cs.countryquiz.placeholder.PlaceholderContent;
 
@@ -29,6 +42,7 @@ import edu.uga.cs.countryquiz.placeholder.PlaceholderContent;
  */
 public class ResultsHistoryFragment extends Fragment {
 
+
     private static final String TAG = "ResultsHistoryFragment";
 
     private ListView listView;
@@ -36,54 +50,65 @@ public class ResultsHistoryFragment extends Fragment {
     private QuizHistoryData quizHistoryData = null;
     private List<QuizResult> quizResultList;
     QuizResultArrayAdapter itemsAdapter;
+    private int versionNum;
 
     public ResultsHistoryFragment() {
         // Required empty public constructor
     }
-
-    public static ResultsHistoryFragment newInstance() {
-        ResultsHistoryFragment fragment = new ResultsHistoryFragment();
-        return fragment;
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
     }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_results_history, container, false);
     }
-
+    /*public static edu.uga.cs.countryquiz.QuizFragment newInstance(int versionNum ) {
+        edu.uga.cs.countryquiz.QuizFragment fragment = new edu.uga.cs.countryquiz.QuizFragment();
+        Bundle args = new Bundle();
+        args.putInt( "versionNum", versionNum );
+        fragment.setArguments( args );
+        return fragment;
+    }*/
     @Override
-    public void onViewCreated( View view, Bundle savedInstanceState ) {
-        //Log.d( TAG, "onActivityCreated()" );
-        super.onViewCreated(view,savedInstanceState);
+    public void onViewCreated(@NonNull View view, Bundle savedInstanceState ) {
+        //public void onActivityCreated(Bundle savedInstanceState) {
+        super.onViewCreated( view, savedInstanceState );
 
-        listView = getView().findViewById( R.id.listView );
-        //FloatingActionButton floatingButton = getView().findViewById(R.id.floatingActionButton);
-        /*floatingButton.setOnClickListener( new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                AddJobLeadDialogFragment newFragment = new AddJobLeadDialogFragment();
-                newFragment.setHostFragment( ReviewJobLeadsFragment.this );
-                newFragment.show( getParentFragmentManager(), null);
-            }
-        });*/
+        listView = getView().findViewById(R.id.listView);
+        quizHistoryData = new QuizHistoryData(getActivity());
+        quizResultList = QuizHistoryData.quizHistory;
+        itemsAdapter = new QuizResultArrayAdapter( getActivity(), quizResultList );
 
-        quizHistoryData = new QuizHistoryData( getActivity() );
+        // set headers
+        TextView titleView = view.findViewById( R.id.questionNum );
+        TextView question = view.findViewById( R.id.question );
 
     }
+    public void onResume() {
+        //Log.d( TAG, "Flow2_A.onResume()"  );
+        super.onResume();
+        if( quizHistoryData != null ) {
+            //quizHistoryData.restorelJobLeads();
+            quizResultList = QuizHistoryData.quizHistory;
 
-    // this is a callback for the AddJobLeadDialogFragment which saves a new job lead
-    // this method is called from the AddJobLeadDialogFragment on the "OK" button tap.
-    public void saveNewJobLead(QuizResult jobLead) {
+            Log.d( TAG, "ReviewJobLeadsFragment.onResume(): length: " + quizResultList.size() );
+
+            itemsAdapter = new QuizResultArrayAdapter(getActivity(), quizResultList );
+            listView.setAdapter(itemsAdapter);
+        }
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle( getResources().getString( R.string.app_name ) );
+    }
+    /*public void loadQuizResults() {
+        for (QuizResult q: quizResultList) {
+            itemsAdapter.getView();
+        }
+    }*/
+    public void saveNewQuizResult(QuizResult quizResult) {
         // add the new job lead
-        quizResultList.add( jobLead );
+        quizResultList.add( quizResult );
 
         // update the list view including the new job lead
         itemsAdapter = new QuizResultArrayAdapter( getActivity(), quizResultList );
@@ -104,53 +129,8 @@ public class ResultsHistoryFragment extends Fragment {
         } );
     }
 
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.search_menu, menu);
-        MenuItem mSearch = menu.findItem(R.id.appSearchBar);
-        SearchView mSearchView = (SearchView) mSearch.getActionView();
-        mSearchView.setQueryHint("Search words");
-        EditText searchEditText = (EditText) mSearchView.findViewById(androidx.appcompat.R.id.search_src_text );
-
-        mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                Log.d( TAG, "Query submitted" );
-                return false;
-            }
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                itemsAdapter.getFilter().filter(newText);
-                return true;
-            }
-        });
-        super.onCreateOptionsMenu(menu, inflater);
-    }
-
-    @Override
-    public void onResume() {
-        //Log.d( TAG, "Flow2_A.onResume()"  );
-        super.onResume();
-        if( quizHistoryData != null ) {
-            quizHistoryData.restorelQuizResults();
-            quizResultList = quizHistoryData.getQuizResults();
-
-            Log.d( TAG, "ResultsHistoryFragment.onResume(): length: " + quizResultList.size() );
-
-            itemsAdapter = new QuizResultArrayAdapter(getActivity(), quizResultList );
-            listView.setAdapter(itemsAdapter);
-        }
-        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle( getResources().getString( R.string.app_name ) );
-    }
-
-    // We need to save job leads into a file as the activity stops being a foreground activity
-    @Override
-    public void onPause() {
-        Log.d( TAG, "ResultsHistoryFragment.onPause()" );
-        super.onPause();
-
-        Log.d( TAG, "ResultsHistoryFragment.onPause(): saving job leads" );
-        if( quizHistoryData != null )
-            quizHistoryData.saveQuizResults();
+    public static ResultsHistoryFragment newInstance() {
+        ResultsHistoryFragment fragment = new ResultsHistoryFragment();
+        return fragment;
     }
 }

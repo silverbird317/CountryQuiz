@@ -19,7 +19,7 @@ public class CountryListData {
     private SQLiteDatabase db;
     private SQLiteOpenHelper quizDBHelper;
 
-    private int countryCount;
+    private static int countryCount;
 
     Context context;
 
@@ -56,12 +56,6 @@ public class CountryListData {
     public List<CountryList> retrieveAllCountryLists() {
         ArrayList<CountryList> countryLists = new ArrayList<>();
 
-        //String[] columns = new String[] { QuizDBHelper.COUNTRYLIST_COLUMN_CID, QuizDBHelper.COUNTRYLIST_COLUMN_COUNTRY, QuizDBHelper.COUNTRYLIST_COLUMN_CONTINENT };
-        //Cursor cursor = db.query(QuizDBHelper.TABLE_COUNTRYLIST, columns, null, null, null, null, null);
-        //Cursor cursorCourses = db.rawQuery("SELECT * FROM " + QuizDBHelper.TABLE_COUNTRYLIST, null);
-        /*if (cursor != null) {
-            cursor.moveToFirst();
-        }*/
         Cursor cursor = null;
 
         cursor = db.query(edu.uga.cs.countryquiz.QuizDBHelper.TABLE_COUNTRYLIST, null, null, null, null, null, null);
@@ -111,7 +105,7 @@ public class CountryListData {
         return null;
     }
 
-    public int getCountryCount () {
+    public static int getCountryCount () {
         return countryCount;
     }
 
