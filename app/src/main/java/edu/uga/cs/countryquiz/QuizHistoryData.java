@@ -23,10 +23,6 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * This class represents job leads.  It also facilitates storing and restoring job leads
- * from file.
- */
 public class QuizHistoryData {
 
     public static List<QuizResult> quizHistory = new ArrayList<QuizResult>();
@@ -37,37 +33,69 @@ public class QuizHistoryData {
     private SQLiteDatabase db;
     private List<QuizResult> quizResults;
     private Context context;
+    private static boolean exists = false;
 
-
+    /*
+     * public constructor
+     */
     public QuizHistoryData( Context context ) {
         this.context = context;
         quizResults = new ArrayList<QuizResult>();
         this.resultsDBHelper = edu.uga.cs.countryquiz.ResultsDBHelper.getInstance(context);
     }
+
+    /*
+     * open database connection
+     */
     public void open() {
         db = resultsDBHelper.getWritableDatabase(); //inherited from SQLiteOpenHelper
     }
+
+    /*
+     * close database connection
+     */
     public void close(){
         if(resultsDBHelper != null)
             resultsDBHelper.close();
     }
 
+    /*
+     * clear items in database
+     */
+    public void clear() {
+        String clearDBQuery = "DELETE FROM " + ResultsDBHelper.TABLE_RESULTSLIST;
+        db.execSQL(clearDBQuery);
+    }
+
+    /*
+     * store a single quiz result
+     */
     public QuizResult storeQuizResult(QuizResult quizResult, int i) {
         ContentValues values = new ContentValues();
         //Log.d("humph", i + ": " + countryList.getCountry());
 
-        values.put(QuizDBHelper.COUNTRYLIST_COLUMN_COUNTRY, quizResult.getDate());
-        values.put(QuizDBHelper.COUNTRYLIST_COLUMN_CONTINENT, quizResult.getScore());
+        if (db == null) {
+            db = resultsDBHelper.getWritableDatabase();
+        }
+        values.put(ResultsDBHelper.RESULTSLIST_COLUMN_DATE, quizResult.getDate());
+        values.put(ResultsDBHelper.RESULTSLIST_COLUMN_SCORE, quizResult.getScore());
 
-        long id = db.insert(edu.uga.cs.countryquiz.QuizDBHelper.TABLE_COUNTRYLIST,null,values);
+        long id = db.insert(edu.uga.cs.countryquiz.ResultsDBHelper.TABLE_RESULTSLIST,null,values);
 
         quizResult.setCid(id);
 
         return quizResult;
     }
 
+    /*
+     * return a list of all quiz results
+     */
     public List<QuizResult> retrieveQuizResults() {
         ArrayList<QuizResult> quizResults = new ArrayList<>();
+
+        if (db == null) {
+            db = resultsDBHelper.getWritableDatabase();
+        }
 
         Cursor cursor = null;
         cursor = db.query(edu.uga.cs.countryquiz.ResultsDBHelper.TABLE_RESULTSLIST, null, null, null, null, null, null);
@@ -84,11 +112,8 @@ public class QuizHistoryData {
             QuizResult quizResult = new QuizResult(date, score);
             quizResult.setCid(id);
             quizResults.add(quizResult);
+            Log.d("ADDED", quizResult.toString());
         }
-        return quizResults;
-    }
-
-    public List<QuizResult> getQuizResults() {
         return quizResults;
     }
 }

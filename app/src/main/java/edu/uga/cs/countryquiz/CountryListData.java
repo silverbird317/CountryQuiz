@@ -23,20 +23,32 @@ public class CountryListData {
 
     Context context;
 
+    /*
+     * constructor that passes in context
+     */
     public CountryListData(Context context){
         this.quizDBHelper = edu.uga.cs.countryquiz.QuizDBHelper.getInstance(context);
         this.context = context;
     }
 
+    /*
+     * opens database connection
+     */
     public void open() {
         db = quizDBHelper.getWritableDatabase(); //inherited from SQLiteOpenHelper
         loadCountries();
     }
+    /*
+     * close data base connection
+     */
     public void close(){
         if(quizDBHelper != null)
             quizDBHelper.close();
     }
 
+    /*
+     * store values from csv to database
+     */
     public CountryList storeCountryList(CountryList countryList, int i) {
 
         ContentValues values = new ContentValues();
@@ -53,6 +65,9 @@ public class CountryListData {
         return countryList;
     }
 
+    /*
+     * return a list with all countries
+     */
     public List<CountryList> retrieveAllCountryLists() {
         ArrayList<CountryList> countryLists = new ArrayList<>();
 
@@ -73,6 +88,9 @@ public class CountryListData {
         return countryLists;
     }
 
+    /*
+     * add countries from csv to database
+     */
     public List<CountryList> loadCountries() {
         ArrayList<CountryList> countryLists = new ArrayList<>();
 
@@ -105,6 +123,9 @@ public class CountryListData {
         return null;
     }
 
+    /*
+     * return number of countries in database
+     */
     public static int getCountryCount () {
         return countryCount;
     }

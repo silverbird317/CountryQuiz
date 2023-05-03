@@ -3,6 +3,7 @@ package edu.uga.cs.countryquiz;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 
 import androidx.activity.OnBackPressedCallback;
@@ -51,15 +52,24 @@ public class QuizFragment extends Fragment {
     private TextView questionsCorrect;
     private static int answered = 0;
     private static int correct = 0;
+    private static QuizResult result; // result of quiz to pass to database
 
     // which Android version to display in the fragment
     private int versionNum;
+    // context
+    private Context context;
+    private QuizHistoryData dbhelper;
 
+    /*
+     * required empty public constructor
+     */
     public QuizFragment() {
         // Required empty public constructor
     }
 
-
+    /*
+     * create new instance of fragment
+     */
     public static QuizFragment newInstance( int versionNum ) {
         QuizFragment fragment = new QuizFragment();
         Bundle args = new Bundle();
@@ -68,28 +78,36 @@ public class QuizFragment extends Fragment {
         return fragment;
     }
 
+    /*
+     * override oncreate, open database
+     */
     @Override
     public void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
         if( getArguments() != null ) {
             versionNum = getArguments().getInt( "versionNum" );
         }
+
+        new ResultsDBReader().execute();
     }
 
-    /*@Override
-    public void onPause() {
-        super.onPause();
-        if (versionNum == 5) {
-            SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-            Date dateTime = new Date();
-            String date = formatter.format(dateTime).toString();
-            QuizResult result = new QuizResult(date, correct);
-
-            QuizHistoryData.quizHistory.add(result);
-            Log.d("RESULT", result.toString());
+    /*
+     * asynchronous call to open and clear results database
+     */
+    public class ResultsDBReader extends AsyncTask<Void, Void, List<QuizResult>> {
+        @Override
+        protected List<QuizResult> doInBackground(Void... params ) {
+            List<QuizResult> quizResults = new ArrayList<QuizResult>();
+            context = getContext();
+            dbhelper = new QuizHistoryData(context);
+            dbhelper.open();
+            return quizResults;
         }
-    }*/
+    }
 
+    /*
+     * inflate fragment
+     */
     @Override
     public View onCreateView( LayoutInflater inflater, ViewGroup container,
                               Bundle savedInstanceState ) {
@@ -97,6 +115,9 @@ public class QuizFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_quiz, container, false );
     }
 
+    /*
+     * onviewcreated override, instantiate views, set other two answer choices, randomize answers
+     */
     @Override
     public void onViewCreated( @NonNull View view, Bundle savedInstanceState ) {
         //public void onActivityCreated(Bundle savedInstanceState) {
@@ -152,10 +173,10 @@ public class QuizFragment extends Fragment {
         //generate a number to determine the order of non correct answers
         int order = random.nextInt(2);
         spot++;
-        buttons[spot % 3].setText(answerChoices[order % 2 + 1]);
+        buttons[spot % 3].setText(answerChoices[versionNum * 3 + order % 2 + 1]);
         order++;
         spot++;
-        buttons[spot % 3].setText(answerChoices[order % 2 + 1]);
+        buttons[spot % 3].setText(answerChoices[versionNum * 3 + order % 2 + 1]);
 
         radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
 
@@ -189,12 +210,15 @@ public class QuizFragment extends Fragment {
                 });
     }
 
+    /*
+     * if finish button on last question fragment clicked, back button will not save quizzes, only finish button
+     */
     public class FinishListener implements View.OnClickListener {
         public void onClick(View view) {
             SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy   HH:mm");
             Date dateTime = new Date();
             String date = formatter.format(dateTime).toString();
-            QuizResult result = new QuizResult(date, correct);
+            result = new QuizResult(date, correct);
 
             answered = 0;
             correct = 0;
@@ -202,25 +226,54 @@ public class QuizFragment extends Fragment {
             QuizHistoryData.quizHistory.add(result);
             Log.d("RESULT", result.toString());
 
+            new QuizResultHelper().execute();
+
             getActivity().finish();
         }
     }
 
+    /*
+     * asynchronously store quiz results
+     */
+    public class QuizResultHelper extends AsyncTask<Void, Void, List<QuizResult>> {
+        @Override
+        protected List<QuizResult> doInBackground(Void... params ) {
+            List<QuizResult> quizResults = new ArrayList<QuizResult>();
+            dbhelper.storeQuizResult(result, correct);
+            return quizResults;
+        }
+    }
+
+    /*
+     * return total number of country questions
+     */
     public static int getNumberOfCountries() {
         return 6;
     }
 
+    /*
+     * set country to ask questions about
+     */
     public static void setCountry (int index, int countryIndex) {
         countryRand[index] = countryIndex;
     }
 
+    /*
+     * set the list of countries
+     */
     public static void setCountries (List<CountryList> country) {
         countries = country;
     }
-
+    /*
+     * set correct answer of quiz
+     */
     public static void setCorrectAnswer (int index, int answer) {
         answerChoices[index] = countries.get(answer).getContinent();
     }
+
+    /*
+     * generate random incorrect answers
+     */
     public static void generateAnswers (int versionNum) {
         int continentID = -1;
         switch (answerChoices[versionNum * 3]) {
@@ -248,16 +301,22 @@ public class QuizFragment extends Fragment {
         while (rng.hasNext() && count < 3) {
             int i = rng.next();
             Log.d("CONTINENT", continentID + "");
-            answerChoices[versionNum + count] = continents[(continentID + i) % 6];
+            answerChoices[versionNum * 3 + count] = continents[(continentID + i) % 6];
             Log.d("Answer rng", i + "\tcontinentID: " + ((continentID + i) % 6));
             Log.d("CountryGive", continents[(continentID + i) % 6]);
             count++;
         }
     }
 
+    /*
+     * class to help generate unique random numbers
+     */
     public static class UniqueRng implements Iterator<Integer> {
         private List<Integer> numbers = new ArrayList<>();
 
+        /*
+         * constructor for class, creates list of numbers and shuffles them
+         */
         public UniqueRng(int n) {
             for (int i = 1; i <= n; i++) {
                 numbers.add(i);
@@ -265,6 +324,10 @@ public class QuizFragment extends Fragment {
 
             Collections.shuffle(numbers);
         }
+
+        /*
+         * returns next number in the list
+         */
         @Override
         public Integer next() {
             if (!hasNext()) {
@@ -273,6 +336,9 @@ public class QuizFragment extends Fragment {
             return numbers.remove(0);
         }
 
+        /*
+         * if list has a next number
+         */
         @Override
         public boolean hasNext() {
             return !numbers.isEmpty();

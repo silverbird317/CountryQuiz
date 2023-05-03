@@ -23,6 +23,9 @@ public class QuizResultArrayAdapter extends ArrayAdapter<QuizResult> {
     private List<QuizResult> values;
     private final List<QuizResult> originalValues;
 
+    /*
+     * public constructor
+     */
     public QuizResultArrayAdapter(Context context, List<QuizResult> values) {
         super(context, 0, new ArrayList<QuizResult>( values ));
         this.context = context;
@@ -32,8 +35,10 @@ public class QuizResultArrayAdapter extends ArrayAdapter<QuizResult> {
         Log.d( DEBUG_TAG, "JobLeadArrayAdapter.originalValues: object: " + originalValues );
     }
 
-    // this overridden method creates a single item's view, to be used in a ListView.
-    // position is supplied by Android and indicates which item on the list should be rendered.
+    /*
+     * this overridden method creates a single item's view, to be used in a ListView.
+     * position is supplied by Android and indicates which item on the list should be rendered.
+     */
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         Log.d( DEBUG_TAG, "JobLeadArrayAdapter.getView: position: " + position );
@@ -43,13 +48,13 @@ public class QuizResultArrayAdapter extends ArrayAdapter<QuizResult> {
                 (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View itemView = inflater.inflate(R.layout.quiz_result, parent, false);
 
-        QuizResult jobLead = values.get( position );
+        QuizResult quizResult = values.get( position );
 
         TextView date = itemView.findViewById(R.id.date);
         TextView score = itemView.findViewById(R.id.score);
 
-        date.setText("Date: " + jobLead.getDate());
-        score.setText("Score: " + jobLead.getScore() + " / 6");
+        date.setText("Date: " + quizResult.getDate());
+        score.setText("Score: " + quizResult.getScore() + " / 6");
 
         return itemView;
     }

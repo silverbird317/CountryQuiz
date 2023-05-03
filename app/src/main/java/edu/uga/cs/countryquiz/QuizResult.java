@@ -2,51 +2,69 @@ package edu.uga.cs.countryquiz;
 
 import java.io.Serializable;
 
-/**
- * This class (a POJO) represents a single job lead, including the company name,
- * phone number, URL, and brief comments.
- */
 public class QuizResult implements Serializable {
 
     private long cid;
     private String date;
     private int score;
-    public QuizResult() {
-        this.date = null;
-        this.score = 0;
-    }
 
+    /*
+     * public constructor to instantiate date and score
+     */
     public QuizResult(String date, int score) {
         this.date = date;
         this.score = score;
     }
 
+    /*
+     * date getter
+     */
     public String getDate()
     {
         return date;
     }
 
+    /*
+     * date setter
+     */
     public void setDate(String date)
     {
         this.date = date;
     }
 
+    /*
+     * score getter
+     */
     public int getScore()
     {
         return score;
     }
 
+    /*
+     * score setter
+     */
     public void setScore(int score)
     {
         this.score = score;
     }
 
+    /*
+     * toString override
+     */
     public String toString() {
         return "Date: " + date + "\nScore:" + score + " / 6";
     }
+
+    /*
+     * cid getter
+     */
     public long getCid() {
         return cid;
     }
+
+    /*
+     * cid setter
+     */
     public void setCid(long cid) {
         this.cid = cid;
     }

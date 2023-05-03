@@ -6,6 +6,9 @@ import android.os.Bundle;
 
 public class ResultsActivity extends AppCompatActivity {
 
+    /*
+     * overrides oncreate
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

@@ -42,7 +42,6 @@ import edu.uga.cs.countryquiz.placeholder.PlaceholderContent;
  */
 public class ResultsHistoryFragment extends Fragment {
 
-
     private static final String TAG = "ResultsHistoryFragment";
 
     private ListView listView;
@@ -52,26 +51,34 @@ public class ResultsHistoryFragment extends Fragment {
     QuizResultArrayAdapter itemsAdapter;
     private int versionNum;
 
+    /*
+     * required empty public constructor
+     */
     public ResultsHistoryFragment() {
         // Required empty public constructor
     }
+
+    /*
+     * overrides oncreate
+     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
+
+    /*
+     * overrides onCreateView
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_results_history, container, false);
     }
-    /*public static edu.uga.cs.countryquiz.QuizFragment newInstance(int versionNum ) {
-        edu.uga.cs.countryquiz.QuizFragment fragment = new edu.uga.cs.countryquiz.QuizFragment();
-        Bundle args = new Bundle();
-        args.putInt( "versionNum", versionNum );
-        fragment.setArguments( args );
-        return fragment;
-    }*/
+
+    /*
+     * overrides onviewcreated
+     */
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState ) {
         //public void onActivityCreated(Bundle savedInstanceState) {
@@ -87,12 +94,17 @@ public class ResultsHistoryFragment extends Fragment {
         TextView question = view.findViewById( R.id.question );
 
     }
+
+    /*
+     * overrides onresume, loads quiz results back
+     */
     public void onResume() {
         //Log.d( TAG, "Flow2_A.onResume()"  );
         super.onResume();
         if( quizHistoryData != null ) {
+            quizHistoryData.open();
             //quizHistoryData.restorelJobLeads();
-            quizResultList = QuizHistoryData.quizHistory;
+            quizResultList = quizHistoryData.retrieveQuizResults();
 
             Log.d( TAG, "ReviewJobLeadsFragment.onResume(): length: " + quizResultList.size() );
 
@@ -100,37 +112,5 @@ public class ResultsHistoryFragment extends Fragment {
             listView.setAdapter(itemsAdapter);
         }
         ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle( getResources().getString( R.string.app_name ) );
-    }
-    /*public void loadQuizResults() {
-        for (QuizResult q: quizResultList) {
-            itemsAdapter.getView();
-        }
-    }*/
-    public void saveNewQuizResult(QuizResult quizResult) {
-        // add the new job lead
-        quizResultList.add( quizResult );
-
-        // update the list view including the new job lead
-        itemsAdapter = new QuizResultArrayAdapter( getActivity(), quizResultList );
-        listView.setAdapter( itemsAdapter );
-
-        // Reposition the ListView to show the JobLead most recently added (as the last item on the list).
-        // Use of the post method is needed to wait until the ListView is rendered, and only then
-        // reposition the item into view (show the last item on the list).
-        // the post method adds the argument (Runnable) to the message queue to be executed
-        // by Android on the main UI thread.  It will be done *after* the setAdapter call
-        // updates the list items, so the repositioning to the last item will take place
-        // on the complete list of items.
-        listView.post( new Runnable() {
-            @Override
-            public void run() {
-                listView.smoothScrollToPosition( quizResultList.size()-1 );
-            }
-        } );
-    }
-
-    public static ResultsHistoryFragment newInstance() {
-        ResultsHistoryFragment fragment = new ResultsHistoryFragment();
-        return fragment;
     }
 }

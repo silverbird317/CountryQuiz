@@ -26,7 +26,11 @@ public class MainActivity extends AppCompatActivity {
     public static TextView test;
     private CountryListData dbhelper;
     private Context context;
+    private static int entered = 0; // keep track of how many times mainActivity loaded
 
+    /*
+     * onCreate override method, loads countries in database if not loaded, clears history database is not clear
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,9 +46,15 @@ public class MainActivity extends AppCompatActivity {
 
         context = this;
 
-        new JobLeadDBReader().execute();
+        entered++;
+
+        new CountryDBReader().execute();
+        new ResultsDBReader().execute();
     }
 
+    /*
+     * button listener for start quiz button
+     */
     public class StartListener implements View.OnClickListener {
         public void onClick(View view) {
             test.setText("start clicked");
@@ -53,6 +63,9 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    /*
+     * button listener for results button
+     */
     public class ResultListener implements View.OnClickListener {
         public void onClick(View view) {
             test.setText("results clicked");
@@ -61,7 +74,10 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public class JobLeadDBReader extends AsyncTask<Void, Void, List<QuizResult>> {
+    /*
+     * asynchronous call to open countries database
+     */
+    public class CountryDBReader extends AsyncTask<Void, Void, List<QuizResult>> {
         @Override
         protected List<QuizResult> doInBackground(Void... params ) {
             List<QuizResult> quizResults = new ArrayList<QuizResult>();
@@ -71,6 +87,24 @@ public class MainActivity extends AppCompatActivity {
 
                 Log.d("COUNT", "Country Count = " + dbhelper.getCountryCount());
                 QuizFragment.setCountries(dbhelper.retrieveAllCountryLists());
+            }
+            return quizResults;
+        }
+    }
+
+    /*
+     * asynchronous call to open and clear results database
+     */
+    public class ResultsDBReader extends AsyncTask<Void, Void, List<QuizResult>> {
+        @Override
+        protected List<QuizResult> doInBackground(Void... params ) {
+            List<QuizResult> quizResults = new ArrayList<QuizResult>();
+            QuizHistoryData data = new QuizHistoryData(context);
+            data.open();
+            Log.d("QUIZSIZESTART", data.retrieveQuizResults().size() + "");
+            if (entered == 1 && data.retrieveQuizResults().size() > 0) {
+                data.clear();
+                Log.d("QUIZSIZENEW", data.retrieveQuizResults().size() + "");
             }
             return quizResults;
         }

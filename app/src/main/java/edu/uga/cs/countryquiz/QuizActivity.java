@@ -14,6 +14,10 @@ import java.util.stream.Collectors;
 
 public class QuizActivity extends AppCompatActivity {
     private Integer[] countries = new Integer[18];
+
+    /*
+     * oncreate override, picks 6 random countries to ask questions about
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

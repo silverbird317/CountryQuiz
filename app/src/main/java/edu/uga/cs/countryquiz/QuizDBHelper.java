@@ -11,19 +11,25 @@ public class QuizDBHelper extends SQLiteOpenHelper {
     //private reference to single instance
     private static QuizDBHelper helperInstance;
 
-    //private constructor
+    /*
+     * private constructor
+     */
     private QuizDBHelper(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
     }
 
-    //public method to access the instance
+    /*
+     * public method to access the instance
+     */
     public static synchronized QuizDBHelper getInstance(Context context) {
         if(helperInstance == null) {
             helperInstance = new QuizDBHelper(context.getApplicationContext());
         }
         return helperInstance;
     }
-    //defining column names as Java constants
+    /*
+     * defining column names as Java constants
+     */
     public static final String TABLE_COUNTRYLIST = "countryList";
     public static final String COUNTRYLIST_COLUMN_CID = "cid";
     public static final String COUNTRYLIST_COLUMN_COUNTRY = "country";
@@ -37,11 +43,16 @@ public class QuizDBHelper extends SQLiteOpenHelper {
                     + ")";
 
 
-    //creates database
+    /*
+     * creates database
+     */
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(CREATE_COUNTRYLIST);
     }
+    /*
+     * method to upgrade database
+     */
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("drop table if exists " + TABLE_COUNTRYLIST);
